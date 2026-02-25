@@ -1,0 +1,22 @@
+{
+  "name": "top-helper-bot",
+  "version": "1.0.0",
+  "description": "T0P Service Bot Helper",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "huanisalright",
+  "license": "ISC",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "discord.js": "^14.25.1",
+    "dotenv": "^17.3.1",
+    "ms": "^2.1.3"
+  }
+}
