@@ -23,7 +23,7 @@ module.exports = {
         try {
             const searchResults = await play.search(query, { limit: 1 });
             
-            if (!searchResults || searchResults.length === 0 || !searchResults[0]?.url) {
+            if (!searchResults || searchResults.length === 0 || !searchResults[0] || !searchResults[0].url) {
                 return interaction.editReply('No results found for your query. Please try another title.');
             }
 
@@ -74,7 +74,9 @@ module.exports = {
 
         } catch (error) {
             console.error('Play Error:', error);
-            await interaction.editReply('An error occurred while trying to play the song. Check your terminal.');
+            if (interaction.deferred) {
+                await interaction.editReply('An error occurred while trying to play the song.');
+            }
         }
     },
 };
