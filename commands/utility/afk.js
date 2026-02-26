@@ -27,16 +27,20 @@ module.exports = {
         try {
             await member.setNickname(`[AFK] ${oldNickname.substring(0, 25)}`);
         } catch (err) {
-            console.log(`[AFK Notice]: Could not change nickname for ${member.user.tag} (Likely Owner/Higher Role)`);
+            console.log(err);
         }
 
         const embed = new EmbedBuilder()
             .setTitle('AFK Status Enabled')
-            .setDescription(`Status: **${reason}**\n\n*Note: If your name didn't change, it's due to Discord's hierarchy restrictions for Owners.*`)
+            .setDescription(`Reason: **${reason}**\n\n*This message will be deleted in 15 seconds.*`)
             .setColor(0xFEE75C)
             .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });
+
+        setTimeout(() => {
+            interaction.deleteReply().catch(err => {});
+        }, 15000);
     },
     afkUsers
 };

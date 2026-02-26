@@ -6,7 +6,7 @@ module.exports = {
         .setDescription('Send announcement')
         .addChannelOption(opt => opt.setName('channel').setDescription('Target channel').setRequired(true))
         .addStringOption(opt => opt.setName('title').setDescription('Title').setRequired(true))
-        .addStringOption(opt => opt.setName('message').setDescription('Message (use "\n" for new lines)').setRequired(true))
+        .addStringOption(opt => opt.setName('message').setDescription('Message (use \n for new lines)').setRequired(true))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });
@@ -16,11 +16,11 @@ module.exports = {
         const message = interaction.options.getString('message');
 
         const embed = new EmbedBuilder()
-            .setTitle(`📢 ${title}`)
+            .setTitle(` ${title}`)
             .setDescription(message.replace(/\\n/g, '\n'))
-            .setColor('#5865F2')
+            .setColor('#ffffff')
             .setTimestamp()
-            .setFooter({ text: `T0P Service Official • Posted by ${interaction.user.username}` });
+            .setFooter({ text: `T0P • Posted by ${interaction.user.username}` });
 
         try {
             await channel.send({ embeds: [embed] });
