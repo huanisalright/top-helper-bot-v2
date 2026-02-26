@@ -3,10 +3,10 @@ const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('disc
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('announce')
-        .setDescription('Send a professional embed announcement')
+        .setDescription('Send announcement')
         .addChannelOption(opt => opt.setName('channel').setDescription('Target channel').setRequired(true))
         .addStringOption(opt => opt.setName('title').setDescription('Title').setRequired(true))
-        .addStringOption(opt => opt.setName('message').setDescription('Message (use \n for new lines)').setRequired(true))
+        .addStringOption(opt => opt.setName('message').setDescription('Message (use "\n" for new lines)').setRequired(true))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
         await interaction.deferReply({ ephemeral: true });

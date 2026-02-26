@@ -3,7 +3,7 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('dm-all')
-        .setDescription('Send a DM to ALL server members (USE WISELY!)')
+        .setDescription('Send a DM to ALL server members')
         .addStringOption(option => option.setName('message').setDescription('The message to send').setRequired(true))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
@@ -16,7 +16,7 @@ module.exports = {
         for (const [id, member] of members) {
             if (member.user.bot) continue;
             try {
-                await member.send(`**Announcement from T0P Service:**\n${message}`);
+                await member.send(`**Announcement from T0P Admin:**\n${message}`);
                 success++;
             } catch (err) {
                 console.log(`Could not DM ${member.user.tag}`);

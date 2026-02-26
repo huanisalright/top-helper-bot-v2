@@ -7,7 +7,7 @@ module.exports = {
         .setDescription('Delete a specific number of messages')
         .addIntegerOption(option => 
             option.setName('amount')
-                .setDescription('Number of messages to delete (1-100)')
+                .setDescription('Number of messages to delete')
                 .setRequired(true))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
     async execute(interaction) {

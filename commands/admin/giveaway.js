@@ -18,8 +18,8 @@ module.exports = {
 
         const endTimestamp = Math.floor((Date.now() + msDuration) / 1000);
         const embed = new EmbedBuilder()
-            .setTitle('🎉 T0P SERVICE GIVEAWAY 🎉')
-            .setDescription(`🎁 **Prize:** ${prize}\n👥 **Winners:** ${winnerCount}\n⏰ **Ends:** <t:${endTimestamp}:R>`)
+            .setTitle('T0P GIVEAWAY')
+            .setDescription(`**Prize:** ${prize}\n **Winners:** ${winnerCount}\n **Ends:** <t:${endTimestamp}:R>`)
             .setColor(0x5865F2);
 
         const row = new ActionRowBuilder().addComponents(
@@ -49,7 +49,7 @@ module.exports = {
                 winners.push(`<@${list.splice(Math.floor(Math.random() * list.length), 1)}>`);
             }
             await message.edit({ components: [] });
-            interaction.channel.send(winners.length ? `Congratulations ${winners.join(', ')}! You won **${prize}**! 🏆` : 'No participants.');
+            interaction.channel.send(winners.length ? `Congratulations ${winners.join(', ')}! You won **${prize}**! ` : 'No participants.');
         });
     },
 };

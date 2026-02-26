@@ -3,7 +3,7 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('nickname')
-        .setDescription('Change the nickname of a member')
+        .setDescription('Change nickname')
         .addUserOption(option => 
             option.setName('target')
                 .setDescription('The member to change')
@@ -21,7 +21,7 @@ module.exports = {
             await member.setNickname(nick);
             await interaction.reply({ content: `Changed nickname for ${member.user.tag} to **${nick}**`, ephemeral: true });
         } catch (error) {
-            await interaction.reply({ content: `I cannot change that user's nickname (Hierarchy issue).`, ephemeral: true });
+            await interaction.reply({ content: `I cannot change that user's nickname (status user lebih tinggi).`, ephemeral: true });
         }
     },
 };
