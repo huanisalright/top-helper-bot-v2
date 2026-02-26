@@ -14,7 +14,7 @@ module.exports = {
                 .setColor(0x57F287);
 
             const welcomeMsg = await message.reply({ embeds: [welcomeEmbed] });
-            setTimeout(() => welcomeMsg.delete().catch(() => {}), 5000);
+            setTimeout(() => welcomeMsg.delete().catch(() => {}), 15000);
         }
 
         if (message.mentions.members.size > 0) {
