@@ -1,14 +1,14 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, NoSubscriberBehavior } = require('@discordjs/voice');
 const play = require('play-dl');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
-        .setDescription('Play a song from YouTube')
+        .setDescription('Play a song from YouTube/Spotify')
         .addStringOption(option => 
             option.setName('query')
-                .setDescription('Song title or YouTube link')
+                .setDescription('Song title or link')
                 .setRequired(true)),
     async execute(interaction) {
         const query = interaction.options.getString('query');
@@ -21,8 +21,9 @@ module.exports = {
         await interaction.deferReply();
 
         try {
-            const searchResults = await play.search(query, { limit: 1 });
-            if (searchResults.length === 0) {
+            let searchResults = await play.search(query, { limit: 1 });
+            
+            if (!searchResults || searchResults.length === 0) {
                 return interaction.editReply('No results found for your query.');
             }
 
@@ -38,7 +39,10 @@ module.exports = {
                 inputType: stream.type
             });
 
-            const player = createAudioPlayer();
+            const player = createAudioPlayer({
+                behaviors: { noSubscriber: NoSubscriberBehavior.Play }
+            });
+
             player.play(resource);
             connection.subscribe(player);
 
@@ -55,6 +59,10 @@ module.exports = {
 
             await interaction.editReply({ embeds: [embed] });
 
+            player.on('error', error => {
+                console.error(`Audio Player Error: ${error.message}`);
+            });
+
             player.on(AudioPlayerStatus.Idle, () => {
                 setTimeout(() => {
                     if (player.state.status === AudioPlayerStatus.Idle) {
@@ -64,8 +72,8 @@ module.exports = {
             });
 
         } catch (error) {
-            console.error(error);
-            await interaction.editReply('An error occurred while trying to play the song.');
+            console.error('Play Error:', error);
+            await interaction.editReply('An error occurred while trying to play the song. Check terminal for details.');
         }
     },
 };
