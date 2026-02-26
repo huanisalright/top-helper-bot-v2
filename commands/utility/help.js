@@ -5,7 +5,7 @@ const path = require('path');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('help')
-        .setDescription('List all available commands automatically'),
+        .setDescription('List all available commands'),
     async execute(interaction) {
         const foldersPath = path.join(__dirname, '../../commands');
         const commandFolders = fs.readdirSync(foldersPath);
@@ -19,7 +19,7 @@ module.exports = {
             const commandsPath = path.join(foldersPath, folder);
             
             if (fs.lstatSync(commandsPath).isDirectory()) {
-                const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js') && file !== 'file.js'); // Abaikan file.js dummy
+                const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js') && file !== 'file.js');
                 
                 if (commandFiles.length > 0) {
                     const commandList = [];

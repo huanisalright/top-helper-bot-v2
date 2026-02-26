@@ -9,7 +9,6 @@ module.exports = {
         .addStringOption(opt => opt.setName('message').setDescription('Message (use \n for new lines)').setRequired(true))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
-        // Beri tahu Discord bot sedang memproses agar tidak 'Interaction Failed'
         await interaction.deferReply({ ephemeral: true });
 
         const channel = interaction.options.getChannel('channel');
@@ -25,7 +24,6 @@ module.exports = {
 
         try {
             await channel.send({ embeds: [embed] });
-            // Gunakan editReply karena kita sudah pakai deferReply di atas
             return await interaction.editReply({ content: 'Announcement posted!' });
         } catch (error) {
             console.error(error);
