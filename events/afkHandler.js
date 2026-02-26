@@ -8,8 +8,13 @@ module.exports = {
 
         if (afkUsers.has(message.author.id)) {
             afkUsers.delete(message.author.id);
-            const welcomeBack = await message.reply("Welcome back! Your AFK status has been removed.");
-            setTimeout(() => welcomeBack.delete().catch(() => {}), 5000);
+            
+            const welcomeEmbed = new EmbedBuilder()
+                .setDescription(`Welcome back **${message.author.displayName}**! Your AFK status has been removed.`)
+                .setColor(0x57F287);
+
+            const welcomeMsg = await message.reply({ embeds: [welcomeEmbed] });
+            setTimeout(() => welcomeMsg.delete().catch(() => {}), 5000);
         }
 
         if (message.mentions.members.size > 0) {
