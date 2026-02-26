@@ -23,8 +23,8 @@ module.exports = {
         try {
             const searchResults = await play.search(query, { limit: 1 });
             
-            if (!searchResults || searchResults.length === 0) {
-                return interaction.editReply('No results found for your query.');
+            if (!searchResults || searchResults.length === 0 || !searchResults[0]?.url) {
+                return interaction.editReply('No results found for your query. Please try another title.');
             }
 
             const song = searchResults[0];
@@ -32,6 +32,7 @@ module.exports = {
                 channelId: channel.id,
                 guildId: interaction.guild.id,
                 adapterCreator: interaction.guild.voiceAdapterCreator,
+                selfDeaf: true
             });
 
             const stream = await play.stream(song.url);
@@ -49,9 +50,9 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setTitle('Now Playing')
                 .setDescription(`[${song.title}](${song.url})`)
-                .setThumbnail(song.thumbnails[0].url)
+                .setThumbnail(song.thumbnails[0]?.url || null)
                 .addFields(
-                    { name: 'Duration', value: song.durationRaw, inline: true },
+                    { name: 'Duration', value: song.durationRaw || 'Unknown', inline: true },
                     { name: 'Requested by', value: interaction.user.username, inline: true }
                 )
                 .setColor(0x5865F2)
@@ -73,7 +74,7 @@ module.exports = {
 
         } catch (error) {
             console.error('Play Error:', error);
-            await interaction.editReply('An error occurred while trying to play the song.');
+            await interaction.editReply('An error occurred while trying to play the song. Check your terminal.');
         }
     },
 };
