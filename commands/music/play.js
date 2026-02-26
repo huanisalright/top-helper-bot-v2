@@ -5,7 +5,7 @@ const play = require('play-dl');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
-        .setDescription('Play a song from YouTube/Spotify')
+        .setDescription('Play a song from YouTube')
         .addStringOption(option => 
             option.setName('query')
                 .setDescription('Song title or link')
@@ -21,7 +21,7 @@ module.exports = {
         await interaction.deferReply();
 
         try {
-            let searchResults = await play.search(query, { limit: 1 });
+            const searchResults = await play.search(query, { limit: 1 });
             
             if (!searchResults || searchResults.length === 0) {
                 return interaction.editReply('No results found for your query.');
@@ -73,7 +73,7 @@ module.exports = {
 
         } catch (error) {
             console.error('Play Error:', error);
-            await interaction.editReply('An error occurred while trying to play the song. Check terminal for details.');
+            await interaction.editReply('An error occurred while trying to play the song.');
         }
     },
 };
