@@ -1,6 +1,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const cron = require('node-cron'); 
+const jadwalKuliah = require('./jadwal_data.js');
 require('dotenv').config();
 
 const client = new Client({ 
@@ -10,6 +12,23 @@ const client = new Client({
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMembers 
     ] 
+});
+
+cron.schedule('* * * * *', () => {
+    const sekarang = new Date();
+    const satuJamLagi = new Date(sekarang.getTime() + 60 * 60 * 1000);
+    
+    const hariSekarang = satuJamLagi.getDay(); 
+    const jamMenit = `${satuJamLagi.getHours().toString().padStart(2, '0')}:${satuJamLagi.getMinutes().toString().padStart(2, '0')}`;
+
+    const matkulSkrg = jadwalKuliah.find(k => k.hari === hariSekarang && k.jam === jamMenit);
+
+    if (matkulSkrg) {
+        const channel = client.channels.cache.get('1476454680895819910'); 
+        if (channel) {
+            channel.send(`⚠️ **REMINDER KULIAH!**\nSatu jam lagi ada kelas **${matkulSkrg.matkul}** jam **${matkulSkrg.jam}**.\nPersiapkan diri kamu, Juan! 🏗️`);
+        }
+    }
 });
 
 client.commands = new Collection();
@@ -42,12 +61,7 @@ for (const file of eventFiles) {
     }
 }
 
-process.on('unhandledRejection', error => {
-    console.error('Unhandled promise rejection:', error);
-});
-
-process.on('uncaughtException', error => {
-    console.error('Uncaught Exception:', error);
-});
+process.on('unhandledRejection', error => console.error('Unhandled Promise:', error));
+process.on('uncaughtException', error => console.error('Uncaught Exception:', error));
 
 client.login(process.env.DISCORD_TOKEN);
