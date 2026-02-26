@@ -21,13 +21,17 @@ module.exports = {
         await interaction.deferReply();
 
         try {
-            const searchResults = await play.search(query, { limit: 1 });
+            const searchResults = await play.search(query, { 
+                limit: 1,
+                source: { youtube: 'video' } 
+            });
             
-            if (!searchResults || searchResults.length === 0 || !searchResults[0] || !searchResults[0].url) {
+            const song = searchResults[0];
+
+            if (!song || !song.url) {
                 return interaction.editReply('No results found for your query. Please try another title.');
             }
 
-            const song = searchResults[0];
             const connection = joinVoiceChannel({
                 channelId: channel.id,
                 guildId: interaction.guild.id,
@@ -35,7 +39,10 @@ module.exports = {
                 selfDeaf: true
             });
 
-            const stream = await play.stream(song.url);
+            const stream = await play.stream(song.url, { 
+                discordPlayerCompatibility: true 
+            });
+
             const resource = createAudioResource(stream.stream, {
                 inputType: stream.type
             });
@@ -75,7 +82,7 @@ module.exports = {
         } catch (error) {
             console.error('Play Error:', error);
             if (interaction.deferred) {
-                await interaction.editReply('An error occurred while trying to play the song.');
+                await interaction.editReply('An error occurred. Try pasting a direct YouTube link!');
             }
         }
     },
