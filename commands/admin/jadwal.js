@@ -13,7 +13,7 @@ module.exports = {
             .setTimestamp();
 
         let deskripsi = "";
-        [1, 2, 3, 4, 5].forEach(h => {
+        [1, 2, 3, 4, 5, 6].forEach(h => {
             const list = jadwalKuliah.filter(k => k.hari === h);
             if (list.length > 0) {
                 deskripsi += `\n**${namaHari[h]}**\n`;
