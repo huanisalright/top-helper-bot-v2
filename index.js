@@ -19,7 +19,6 @@ const client = new Client({
         GatewayIntentBits.DirectMessages,
         GatewayIntentBits.DirectMessageReactions,
         GatewayIntentBits.DirectMessageTyping,
-        GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildScheduledEvents,
         GatewayIntentBits.GuildIntegrations,
         GatewayIntentBits.GuildWebhooks,
@@ -29,9 +28,7 @@ const client = new Client({
     ] 
 });
 
-
 client.commands = new Collection();
-const commandsJSON = [];
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
@@ -44,7 +41,6 @@ for (const folder of commandFolders) {
         const command = require(filePath);
         if ('data' in command && 'execute' in command) {
             client.commands.set(command.data.name, command);
-            commandsJSON.push(command.data.toJSON());
         }
     }
 }
@@ -55,13 +51,23 @@ const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'
 for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
     const event = require(filePath);
-    if (event.once) {
-        client.once(event.name, (...args) => event.execute(...args));
+
+    if (Array.isArray(event)) {
+        for (const e of event) {
+            if (e.once) {
+                client.once(e.name, (...args) => e.execute(...args));
+            } else {
+                client.on(e.name, (...args) => e.execute(...args));
+            }
+        }
     } else {
-        client.on(event.name, (...args) => event.execute(...args));
+        if (event.once) {
+            client.once(event.name, (...args) => event.execute(...args));
+        } else {
+            client.on(event.name, (...args) => event.execute(...args));
+        }
     }
 }
-
 
 cron.schedule('* * * * *', () => {
     const sekarang = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Jakarta"}));
