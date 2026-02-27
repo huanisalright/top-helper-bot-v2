@@ -65,6 +65,11 @@ client.distube.on('playSong', (queue, song) => {
     }
 });
 
+client.distube.on('error', (channel, error) => {
+    console.error(error);
+    if (channel) channel.send(`❌ Music Error: ${error.message.slice(0, 100)}`);
+});
+
 const deployCommands = async () => {
     const rest = new REST().setToken(process.env.DISCORD_TOKEN);
     try {
