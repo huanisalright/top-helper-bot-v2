@@ -1,9 +1,15 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
-const cron = require('node-cron'); 
-const jadwalKuliah = require('./jadwal_data.js');
-require('dotenv').config();
+import fs from 'node:fs';
+import path from 'node:path';
+import { Client, Collection, GatewayIntentBits } from 'discord.js';
+import cron from 'node-cron';
+import jadwalKuliah from './jadwal_data.js';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'node:url';
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const client = new Client({ 
     intents: [
@@ -42,10 +48,10 @@ for (const folder of commandFolders) {
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
-        const command = require(filePath);
-        if ('data' in command && 'execute' in command) {
-            client.commands.set(command.data.name, command);
-        }
+            const command = await import(`file://${filePath}`);
+            if ('data' in command.default && 'execute' in command.default) {
+                client.commands.set(command.default.data.name, command.default);
+            }
     }
 }
 
@@ -54,11 +60,11 @@ const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'
 
 for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
-    const event = require(filePath);
-    if (event.once) {
-        client.once(event.name, (...args) => event.execute(...args));
+    const event = await import(`file://${filePath}`);
+    if (event.default.once) {
+        client.once(event.default.name, (...args) => event.default.execute(...args));
     } else {
-        client.on(event.name, (...args) => event.execute(...args));
+        client.on(event.default.name, (...args) => event.default.execute(...args));
     }
 }
 
