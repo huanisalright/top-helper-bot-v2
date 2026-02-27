@@ -50,7 +50,7 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setColor(0xFF0000)
-            .setTitle('🚀 Song Release Countdown')
+            .setTitle('Song Release Countdown')
             .setDescription(`**${artist}** - *${title}*`)
             .addFields(
                 { name: 'Releasing', value: `<t:${unixTimestamp}:R>`, inline: true },
