@@ -19,18 +19,13 @@ const client = new Client({
 });
 
 client.distube = new DisTube(client, {
-    plugins: [
-        new SpotifyPlugin()
-    ],
+    plugins: [new SpotifyPlugin()],
     emitNewSongOnly: true,
-    ffmpeg: {
-        path: ffmpeg
-    }
+    ffmpeg: { path: ffmpeg }
 });
 
 client.commands = new Collection();
 const commandsJSON = [];
-
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
@@ -62,31 +57,23 @@ for (const file of eventFiles) {
 }
 
 client.distube.on('playSong', (queue, song) => {
-    const channel = queue.textChannel;
-    if (channel) {
-        channel.send(`🎶 Now playing: **${song.name}** - \`${song.formattedDuration}\``);
-    }
+    queue.textChannel?.send(`🎶 Now playing: **${song.name}** - \`${song.formattedDuration}\``);
 });
 
 client.distube.on('addSong', (queue, song) => {
-    const channel = queue.textChannel;
-    if (channel) {
-        channel.send(`✅ Added **${song.name}** to the queue!`);
-    }
+    queue.textChannel?.send(`✅ Added **${song.name}** to the queue!`);
 });
 
 client.distube.on('error', (channel, error) => {
     console.error('DisTube Error:', error);
     if (channel) {
-        channel.send(`❌ Music Error: ${error.message.slice(0, 100)}`);
+        const msg = error?.message ? error.message.slice(0, 100) : "An unexpected error occurred";
+        channel.send(`❌ Music Error: ${msg}`).catch(() => null);
     }
 });
 
 client.distube.on('disconnect', (queue) => {
-    const channel = queue.textChannel;
-    if (channel) {
-        channel.send("👋 Bubye! Leaving the voice channel.");
-    }
+    queue.textChannel?.send("👋 Bubye! Leaving the voice channel.");
 });
 
 const deployCommands = async () => {

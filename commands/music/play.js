@@ -20,7 +20,6 @@ module.exports = {
         }
 
         const query = interaction.options.getString('query');
-        
         await interaction.deferReply();
 
         try {
@@ -31,7 +30,7 @@ module.exports = {
             
             const embed = notif(
                 '🎵 Music System', 
-                `Processing your request: **${query}**`, 
+                `Processing request: **${query}**`, 
                 0x1DB954
             );
             
@@ -39,11 +38,13 @@ module.exports = {
         } catch (error) {
             console.error('Music Play Error:', error);
             
-            if (error.message.includes('decipher')) {
-                return interaction.editReply('❌ YouTube encryption error. Try updating library or using cookies.');
+            const errorMessage = error?.message ? error.message.slice(0, 100) : "Unknown error";
+            
+            if (errorMessage.includes('decipher')) {
+                return interaction.editReply('❌ YouTube encryption error (decipher). Try adding cookies.');
             }
             
-            await interaction.editReply('❌ Failed to play. Make sure it is a valid Spotify link or song name.');
+            await interaction.editReply(`❌ Failed to play: ${errorMessage}`);
         }
     },
 };
