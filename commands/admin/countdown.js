@@ -17,6 +17,10 @@ module.exports = {
                 .setDescription('Format: DD/MM/YY')
                 .setRequired(true))
         .addStringOption(option =>
+            option.setName('artwork')
+                .setDescription('URL Image Artwork (Optional)')
+                .setRequired(false))
+        .addStringOption(option =>
             option.setName('message')
                 .setDescription('Message from the artist')
                 .setRequired(false)),
@@ -24,44 +28,41 @@ module.exports = {
         const artist = interaction.options.getString('artist');
         const title = interaction.options.getString('title');
         const dateInput = interaction.options.getString('date');
+        const artwork = interaction.options.getString('artwork');
         const message = interaction.options.getString('message') || 'Coming soon!';
         
         const parts = dateInput.split('/');
         if (parts.length !== 3) {
-            return interaction.reply({ content: 'Format salah! Gunakan DD/MM/YY (Contoh: 21/06/26)', ephemeral: true });
+            return interaction.reply({ content: 'DD/MM/YY', ephemeral: true });
         }
 
         const day = parseInt(parts[0]);
         const month = parseInt(parts[1]) - 1;
         let year = parseInt(parts[2]);
-
         if (year < 100) year += 2000;
 
         const releaseDate = new Date(year, month, day);
-        const now = new Date();
+        const unixTimestamp = Math.floor(releaseDate.getTime() / 1000);
 
         if (isNaN(releaseDate.getTime())) {
-            return interaction.reply({ content: 'Tanggal tidak valid!', ephemeral: true });
+            return interaction.reply({ content: 'Invalid date!', ephemeral: true });
         }
-
-        if (releaseDate < now) {
-            return interaction.reply({ content: 'Tanggal harus di masa depan, Juan!', ephemeral: true });
-        }
-
-        const diffTime = Math.abs(releaseDate - now);
-        const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
         const embed = new EmbedBuilder()
             .setColor(0xFF0000)
-            .setTitle('Song Release Countdown')
+            .setTitle('🚀 Song Release Countdown')
             .setDescription(`**${artist}** - *${title}*`)
             .addFields(
-                { name: 'Releasing in', value: `**${days}** hari lagi`, inline: true },
-                { name: 'Release Date', value: `<t:${Math.floor(releaseDate.getTime() / 1000)}:D>`, inline: true },
+                { name: 'Releasing', value: `<t:${unixTimestamp}:R>`, inline: true },
+                { name: 'Release Date', value: `<t:${unixTimestamp}:D>`, inline: true },
                 { name: 'Message', value: message }
             )
             .setTimestamp()
-            .setFooter({ text: 'T0P Service Release Radar' });
+            .setFooter({ text: 'T0P' });
+
+        if (artwork) {
+            embed.setImage(artwork);
+        }
 
         await interaction.reply({ embeds: [embed] });
     }
