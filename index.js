@@ -10,13 +10,14 @@ const client = new Client({
     intents: [
         GatewayIntentBits.Guilds, 
         GatewayIntentBits.GuildMessages, 
-        GatewayIntentBits.MessageContent
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildVoiceStates
     ] 
 });
 
+
 client.commands = new Collection();
 const commandsJSON = [];
-
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
@@ -47,17 +48,6 @@ for (const file of eventFiles) {
     }
 }
 
-const deployCommands = async () => {
-    const rest = new REST().setToken(process.env.DISCORD_TOKEN);
-    try {
-        await rest.put(
-            Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
-            { body: commandsJSON },
-        );
-    } catch (error) {
-        console.error('Deploy Error:', error);
-    }
-};
 
 cron.schedule('* * * * *', () => {
     const sekarang = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Jakarta"}));
@@ -75,7 +65,4 @@ cron.schedule('* * * * *', () => {
     }
 });
 
-(async () => {
-    await deployCommands();
-    client.login(process.env.DISCORD_TOKEN);
-})();
+client.login(process.env.DISCORD_TOKEN);
