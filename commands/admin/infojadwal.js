@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const { jadwalNext } = require('../../utils/embed.js');
 const jadwalData = require('../../jadwal_data.js');
 
