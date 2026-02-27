@@ -14,9 +14,9 @@ const client = new Client({
         GatewayIntentBits.GuildVoiceStates
     ] 
 });
-
+// timezone error?? harusnya udah GMT +7
 cron.schedule('* * * * *', () => {
-    const sekarang = new Date();
+    const sekarang = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Jakarta"}));
     const satuJamLagi = new Date(sekarang.getTime() + 60 * 60 * 1000);
     
     const hariSekarang = satuJamLagi.getDay(); 
@@ -27,13 +27,12 @@ cron.schedule('* * * * *', () => {
     if (matkulSkrg) {
         const channel = client.channels.cache.get('1476454680895819910'); 
         if (channel) {
-            channel.send(`⚠️ **REMINDER KULIAH!**\nSatu jam lagi ada kelas **${matkulSkrg.matkul}** jam **${matkulSkrg.jam}**.\nPersiapkan diri kamu, Juan! 🏗️`);
+            channel.send(`⚠️ **REMINDER KULIAH!**\nSatu jam lagi ada kelas **${matkulSkrg.matkul}** jam **${matkulSkrg.jam}**.\nPersiapkan diri kamu! 📚`);
         }
     }
 });
 
 client.commands = new Collection();
-
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 

@@ -10,7 +10,7 @@ module.exports = [
     { hari: 4, jam: "09:00", matkul: "Mekanika Tanah II DD 09:00 - 10:50" },
     { hari: 4, jam: "17:20", matkul: "Bangunan Air BB 13:00 - 15:50" },
     { hari: 5, jam: "07:00", matkul: "Struktur Beton Bertulang Lanjut BB 07:00 - 09:50" },
-    { hari: 5, jam: "09:00", matkul: "Rekayasa Banda CE 09:00 - 11:00" },
+    { hari: 5, jam: "09:00", matkul: "Rekayasa Bandara CE 09:00 - 11:00" },
     { hari: 5, jam: "13:00", matkul: "Mekanika Tanah II BC 13:00 - 15:50" },
     { hari: 6, jam: "09:00", matkul: "SBBL ASIS 09:00 - 13:00"}
 ];
