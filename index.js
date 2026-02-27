@@ -25,11 +25,6 @@ client.distube = new DisTube(client, {
     emitNewSongOnly: true,
     ffmpeg: {
         path: ffmpeg
-    },
-    ytdlOptions: {
-        highWaterMark: 1 << 25,
-        quality: "highestaudio",
-        format: "bestaudio/best"
     }
 });
 
