@@ -1,6 +1,9 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits, REST, Routes } = require('discord.js');
+const { DisTube } = require('distube');
+const { YouTubePlugin } = require('@distube/youtube');
+const { SpotifyPlugin } = require('@distube/spotify');
 const cron = require('node-cron');
 const jadwalKuliah = require('./jadwal_data.js');
 const { notif } = require('./utils/embed.js');
@@ -15,6 +18,13 @@ const client = new Client({
     ] 
 });
 
+client.distube = new DisTube(client, {
+    plugins: [new YouTubePlugin(), new SpotifyPlugin()],
+    leaveOnEmpty: true,
+    leaveOnFinish: false,
+    emitNewSongOnly: true,
+});
+
 client.commands = new Collection();
 const commandsJSON = [];
 
@@ -23,9 +33,7 @@ const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
     const commandsPath = path.join(foldersPath, folder);
-    
     if (!fs.lstatSync(commandsPath).isDirectory()) continue;
-
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
@@ -50,6 +58,13 @@ for (const file of eventFiles) {
     }
 }
 
+client.distube.on('playSong', (queue, song) => {
+    const channel = queue.textChannel;
+    if (channel) {
+        channel.send(`🎶 Now playing: **${song.name}** - \`${song.formattedDuration}\``);
+    }
+});
+
 const deployCommands = async () => {
     const rest = new REST().setToken(process.env.DISCORD_TOKEN);
     try {
@@ -58,26 +73,21 @@ const deployCommands = async () => {
             { body: commandsJSON },
         );
     } catch (error) {
-        console.error(error);
+        console.error('Deploy Error:', error);
     }
 };
 
 cron.schedule('* * * * *', () => {
     const sekarang = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Jakarta"}));
     const target = new Date(sekarang.getTime() + 60 * 60 * 1000); 
-    
     const hari = target.getDay();
     const jamMenit = `${target.getHours().toString().padStart(2, '0')}:${target.getMinutes().toString().padStart(2, '0')}`;
-
     const matkul = jadwalKuliah.find(k => k.hari === hari && k.jam === jamMenit);
 
     if (matkul) {
         const channel = client.channels.cache.get('1476454680895819910');
         if (channel) {
-            const embed = notif(
-                '⚠️ CLASS REMINDER!',
-                `One hour left until **${matkul.matkul}** class at **${matkul.jam}**.`
-            );
+            const embed = notif('⚠️ CLASS REMINDER!', `One hour left until **${matkul.matkul}** class at **${matkul.jam}**.`);
             channel.send({ embeds: [embed] }).catch(() => null);
         }
     }
