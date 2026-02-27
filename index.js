@@ -4,6 +4,7 @@ const { Client, Collection, GatewayIntentBits, REST, Routes } = require('discord
 const { DisTube } = require('distube');
 const { YouTubePlugin } = require('@distube/youtube');
 const { SpotifyPlugin } = require('@distube/spotify');
+const ffmpeg = require('ffmpeg-static');
 const cron = require('node-cron');
 const jadwalKuliah = require('./jadwal_data.js');
 const { notif } = require('./utils/embed.js');
@@ -21,6 +22,9 @@ const client = new Client({
 client.distube = new DisTube(client, {
     plugins: [new YouTubePlugin(), new SpotifyPlugin()],
     emitNewSongOnly: true,
+    ffmpeg: {
+        path: ffmpeg
+    }
 });
 
 client.commands = new Collection();
