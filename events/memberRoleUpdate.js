@@ -1,4 +1,4 @@
-const { Events } = require('discord.js');
+const { Events, EmbedBuilder } = require('discord.js');
 const { sendLog } = require('../utils/logger');
 
 module.exports = {
@@ -8,21 +8,27 @@ module.exports = {
         const addedRoles = newMember.roles.cache.filter(role => !oldMember.roles.cache.has(role.id));
 
         if (addedRoles.size > 0) {
-            await sendLog(
-                newMember.guild,
-                'Role Added',
-                `**User:** ${newMember.user}\n**Added:** ${addedRoles.map(r => r.name).join(', ')}`,
-                0x5865F2
-            );
+            for (const role of addedRoles.values()) {
+                await sendLog(
+                    newMember.guild,
+                    'Role Added',
+                    `**User:** ${newMember.user}\n**Role:** ${role}`,
+                    0x5865F2,
+                    newMember.user.displayAvatarURL()
+                );
+            }
         }
 
         if (removedRoles.size > 0) {
-            await sendLog(
-                newMember.guild,
-                'Role Removed',
-                `**User:** ${newMember.user}\n**Removed:** ${removedRoles.map(r => r.name).join(', ')}`,
-                0xED4245
-            );
+            for (const role of removedRoles.values()) {
+                await sendLog(
+                    newMember.guild,
+                    'Role Removed',
+                    `**User:** ${newMember.user}\n**Role:** ${role}`,
+                    0xED4245,
+                    newMember.user.displayAvatarURL()
+                );
+            }
         }
     },
 };
