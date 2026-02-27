@@ -54,8 +54,16 @@ cron.schedule('* * * * *', () => {
 
     const matkul = jadwalKuliah.find(k => k.hari === hari && k.jam === jamMenit);
 
-    if (matkul) {
-        const channel = client.channels.cache.get('1476454680895819910');
-        if (channel) {
-            const embed = notif(
-                '⚠️ CLASS REMINDER!',
+        if (matkul) {
+            const channel = client.channels.cache.get('1476454680895819910');
+            if (channel) {
+                const embed = notif(
+                    '⚠️ CLASS REMINDER!',
+                    `Kelas ${matkul.nama} dimulai dalam 1 jam!`
+                );
+                channel.send({ embeds: [embed] });
+            }
+        }
+    });
+    
+    client.login(process.env.TOKEN);
