@@ -1,16 +1,18 @@
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const { sendLog } = require('../../utils/logger');
+const { notif } = require('../../utils/embed');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('warn')
-        .setDescription('Warn a member')
-        .addUserOption(opt => opt.setName('target').setDescription('Member').setRequired(true))
-        .addStringOption(opt => opt.setName('reason').setDescription('Reason').setRequired(true))
+        .setDescription('Issue a warning to a member')
+        .addUserOption(opt => opt.setName('target').setDescription('The member to warn').setRequired(true))
+        .addStringOption(opt => opt.setName('reason').setDescription('The reason for the warning').setRequired(true))
         .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
     async execute(interaction) {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
 
         const target = interaction.options.getUser('target');
         const reason = interaction.options.getString('reason');
@@ -18,21 +20,36 @@ module.exports = {
 
         let warns = fs.existsSync(warnPath) ? JSON.parse(fs.readFileSync(warnPath, 'utf8')) : {};
         if (!warns[target.id]) warns[target.id] = [];
-        warns[target.id].push({ reason, staff: interaction.user.tag, date: new Date().toLocaleDateString() });
+        
+        const newWarn = { 
+            reason, 
+            staff: interaction.user.tag, 
+            date: new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }) 
+        };
+        
+        warns[target.id].push(newWarn);
         fs.writeFileSync(warnPath, JSON.stringify(warns, null, 2));
 
-        const dmEmbed = new EmbedBuilder()
-            .setTitle(`⚠️ Warning: ${interaction.guild.name}`)
-            .setColor(0xFFFF00)
-            .addFields({ name: 'Reason', value: reason }, { name: 'Total Warnings', value: `${warns[target.id].length}` });
+        const dmEmbed = notif(
+            `⚠️ Warning: ${interaction.guild.name}`,
+            `You have received a formal warning.\n\n**Reason:** ${reason}\n**Total Warnings:** ${warns[target.id].length}`,
+            0xFFFF00
+        );
 
-        try { await target.send({ embeds: [dmEmbed] }); } catch (e) {}
+        try { 
+            await target.send({ embeds: [dmEmbed] }); 
+        } catch (e) {
+            console.log(`Could not send DM to ${target.tag}`);
+        }
 
-        const logEmbed = new EmbedBuilder()
-            .setTitle('Member Warned')
-            .setColor(0xFFFF00)
-            .setDescription(`**Target:** ${target.tag}\n**Staff:** ${interaction.user.tag}\n**Reason:** ${reason}`);
+        await sendLog(
+            interaction.guild,
+            'Member Warned',
+            `**Target:** ${target.tag} (${target.id})\n**Staff:** ${interaction.user.tag}\n**Reason:** ${reason}\n**Total Warns:** ${warns[target.id].length}`,
+            0xFFFF00,
+            target.displayAvatarURL()
+        );
 
-        return await interaction.editReply({ embeds: [logEmbed] });
+        return await interaction.editReply({ content: `✅ **${target.tag}** has been successfully warned.` });
     },
 };
