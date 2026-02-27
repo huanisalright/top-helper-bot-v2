@@ -12,30 +12,35 @@ module.exports = {
             option.setName('title')
                 .setDescription('Song title')
                 .setRequired(true))
-        .addIntegerOption(option =>
-            option.setName('days')
-                .setDescription('Days until release')
+        .addStringOption(option =>
+            option.setName('date')
+                .setDescription('Release date (format: DD/MM/YY +HH:MM GMT)')
                 .setRequired(true))
         .addStringOption(option =>
             option.setName('message')
-                .setDescription('Message from the artist')
+                .setDescription('Message from the artist (optional)')
                 .setRequired(false)),
     async execute(interaction) {
         const artist = interaction.options.getString('artist');
         const title = interaction.options.getString('title');
-        const days = interaction.options.getInteger('days');
+        const dateString = interaction.options.getString('date');
         const message = interaction.options.getString('message') || 'Coming soon!';
         
-        if (days < 1) {
-            return interaction.reply('Days must be at least 1!');
+        const releaseDate = new Date(dateString);
+        
+        if (isNaN(releaseDate.getTime())) {
+            return interaction.reply('Invalid date format! Use: DD/MM/YY +HH:MM GMT');
         }
 
-        const releaseDate = new Date();
-        releaseDate.setDate(releaseDate.getDate() + days);
+        if (releaseDate < new Date()) {
+            return interaction.reply('Release date must be in the future!');
+        }
+
+        const days = Math.ceil((releaseDate - new Date()) / (1000 * 60 * 60 * 24));
 
         const embed = {
             color: 0xFF0000,
-            title: '🎵 Song Release Countdown',
+            title: 'Song Release Countdown',
             description: `**${artist}** - *${title}*`,
             fields: [
                 {
