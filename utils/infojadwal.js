@@ -5,7 +5,7 @@ const jadwalData = require('../../jadwal_data.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('infojadwal')
-        .setDescription('Cek satu mata kuliah terdekat yang akan datang'),
+        .setDescription('Check the next upcoming class'),
     async execute(interaction) {
         const sekarang = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Jakarta"}));
         const hariSekarang = sekarang.getDay();

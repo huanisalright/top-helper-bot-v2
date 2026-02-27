@@ -29,21 +29,20 @@ module.exports = {
     },
 
     jadwalNext: (matkul, status) => {
-        const embed = new EmbedBuilder()
-            .setColor(status === 'none' ? 0xFF0000 : 0x00FF00)
-            .setTitle('🏗️ Jadwal Kuliah Mendatang')
-            .setTimestamp()
-            .setFooter({ text: 'Civil Engineering Itenas • SUSU BETA' });
-
-        if (status === 'none') {
-            embed.setDescription('Tidak ada lagi jadwal kuliah hari ini. Waktunya fokus garap musik atau santai! 🎸');
+        if (status === 'found') {
+            return new EmbedBuilder()
+                .setTitle('📚 Next Class Alert!')
+                .setDescription(`The next class is **${matkul.matkul}** at **${matkul.jam}**. Get ready! 🚀`)
+                .setColor(0x00FF00)
+                .setTimestamp()
+                .setFooter({ text: 'T0P Service - Schedule Info' });
         } else {
-            embed.setDescription(`Mata kuliah kamu berikutnya adalah:`)
-                 .addFields(
-                     { name: '📚 Mata Kuliah', value: `**${matkul.matkul}**`, inline: true },
-                     { name: '🕒 Jam', value: `\`${matkul.jam}\``, inline: true }
-                 );
+            return new EmbedBuilder()
+                .setTitle('📚 No More Classes Today!')
+                .setDescription('There are no more classes scheduled for the rest of the day. Enjoy your free time! 🎉')
+                .setColor(0xFF0000)
+                .setTimestamp()
+                .setFooter({ text: 'T0P Service - Schedule Info' });
         }
-        return embed;
-    }
+    }   
 };
