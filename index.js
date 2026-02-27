@@ -2,7 +2,6 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits, REST, Routes } = require('discord.js');
 const { DisTube } = require('distube');
-const { YouTubePlugin } = require('@distube/youtube');
 const { SpotifyPlugin } = require('@distube/spotify');
 const ffmpeg = require('ffmpeg-static');
 const cron = require('node-cron');
@@ -20,10 +19,17 @@ const client = new Client({
 });
 
 client.distube = new DisTube(client, {
-    plugins: [new YouTubePlugin(), new SpotifyPlugin()],
+    plugins: [
+        new SpotifyPlugin()
+    ],
     emitNewSongOnly: true,
     ffmpeg: {
         path: ffmpeg
+    },
+    ytdlOptions: {
+        highWaterMark: 1 << 25,
+        quality: "highestaudio",
+        format: "bestaudio/best"
     }
 });
 
@@ -67,9 +73,25 @@ client.distube.on('playSong', (queue, song) => {
     }
 });
 
+client.distube.on('addSong', (queue, song) => {
+    const channel = queue.textChannel;
+    if (channel) {
+        channel.send(`✅ Added **${song.name}** to the queue!`);
+    }
+});
+
 client.distube.on('error', (channel, error) => {
     console.error('DisTube Error:', error);
-    if (channel) channel.send(`❌ Music Error: ${error.message.slice(0, 100)}`);
+    if (channel) {
+        channel.send(`❌ Music Error: ${error.message.slice(0, 100)}`);
+    }
+});
+
+client.distube.on('disconnect', (queue) => {
+    const channel = queue.textChannel;
+    if (channel) {
+        channel.send("👋 Bubye! Leaving the voice channel.");
+    }
 });
 
 const deployCommands = async () => {

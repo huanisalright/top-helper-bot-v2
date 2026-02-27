@@ -4,10 +4,10 @@ const { notif } = require('../../utils/embed');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
-        .setDescription('Play a song from YouTube or Spotify')
+        .setDescription('Play a song from Spotify')
         .addStringOption(option => 
             option.setName('query')
-                .setDescription('Song name, YouTube URL, or Spotify Link')
+                .setDescription('Spotify Link or Song Name')
                 .setRequired(true)),
     async execute(interaction) {
         const voiceChannel = interaction.member.voice.channel;
@@ -31,14 +31,19 @@ module.exports = {
             
             const embed = notif(
                 '🎵 Music System', 
-                `Searching and adding to queue: **${query}**`, 
-                0x5865F2
+                `Processing your request: **${query}**`, 
+                0x1DB954
             );
             
             await interaction.editReply({ embeds: [embed] });
         } catch (error) {
             console.error('Music Play Error:', error);
-            await interaction.editReply('❌ error wkwk.');
+            
+            if (error.message.includes('decipher')) {
+                return interaction.editReply('❌ YouTube encryption error. Try updating library or using cookies.');
+            }
+            
+            await interaction.editReply('❌ Failed to play. Make sure it is a valid Spotify link or song name.');
         }
     },
 };
