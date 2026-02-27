@@ -20,8 +20,6 @@ const client = new Client({
 
 client.distube = new DisTube(client, {
     plugins: [new YouTubePlugin(), new SpotifyPlugin()],
-    leaveOnEmpty: true,
-    leaveOnFinish: false,
     emitNewSongOnly: true,
 });
 
@@ -66,7 +64,7 @@ client.distube.on('playSong', (queue, song) => {
 });
 
 client.distube.on('error', (channel, error) => {
-    console.error(error);
+    console.error('DisTube Error:', error);
     if (channel) channel.send(`❌ Music Error: ${error.message.slice(0, 100)}`);
 });
 
