@@ -1,9 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits, REST, Routes } = require('discord.js');
-const { DisTube } = require('distube');
-const { SpotifyPlugin } = require('@distube/spotify');
-const ffmpeg = require('ffmpeg-static');
 const cron = require('node-cron');
 const jadwalKuliah = require('./jadwal_data.js');
 const { notif } = require('./utils/embed.js');
@@ -13,19 +10,13 @@ const client = new Client({
     intents: [
         GatewayIntentBits.Guilds, 
         GatewayIntentBits.GuildMessages, 
-        GatewayIntentBits.MessageContent, 
-        GatewayIntentBits.GuildVoiceStates
+        GatewayIntentBits.MessageContent
     ] 
-});
-
-client.distube = new DisTube(client, {
-    plugins: [new SpotifyPlugin()],
-    emitNewSongOnly: true,
-    ffmpeg: { path: ffmpeg }
 });
 
 client.commands = new Collection();
 const commandsJSON = [];
+
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
@@ -55,26 +46,6 @@ for (const file of eventFiles) {
         client.on(event.name, (...args) => event.execute(...args));
     }
 }
-
-client.distube.on('playSong', (queue, song) => {
-    queue.textChannel?.send(`🎶 Now playing: **${song.name}** - \`${song.formattedDuration}\``);
-});
-
-client.distube.on('addSong', (queue, song) => {
-    queue.textChannel?.send(`✅ Added **${song.name}** to the queue!`);
-});
-
-client.distube.on('error', (channel, error) => {
-    console.error('DisTube Error:', error);
-    if (channel) {
-        const msg = error?.message ? error.message.slice(0, 100) : "An unexpected error occurred";
-        channel.send(`❌ Music Error: ${msg}`).catch(() => null);
-    }
-});
-
-client.distube.on('disconnect', (queue) => {
-    queue.textChannel?.send("👋 Bubye! Leaving the voice channel.");
-});
 
 const deployCommands = async () => {
     const rest = new REST().setToken(process.env.DISCORD_TOKEN);
