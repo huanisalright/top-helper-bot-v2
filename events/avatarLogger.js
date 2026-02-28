@@ -3,22 +3,20 @@ const { sendLog } = require('../utils/logger');
 
 module.exports = [
     {
-        name: Events.GuildMemberUpdate,
-        async execute(oldMember, newMember) {
-            const oldAvatar = oldMember.user.displayAvatarURL();
-            const newAvatar = newMember.user.displayAvatarURL();
-
-            const oldServerAvatar = oldMember.avatarURL();
-            const newServerAvatar = newMember.avatarURL();
-
-            if (oldAvatar === newAvatar && oldServerAvatar === newServerAvatar) return;
+        name: Events.UserUpdate,
+        async execute(oldUser, newUser) {
+            if (oldUser.avatar === newUser.avatar) return;
+            const guild = newUser.client.guilds.cache.find(g => g.members.cache.has(newUser.id));
+            
+            if (!guild) return;
+            const newAvatarURL = newUser.displayAvatarURL({ size: 4096 });
 
             await sendLog(
-                newMember.guild,
+                guild,
                 '📸 Avatar Updated',
-                `**User:** ${newMember.user.tag} (${newMember.id})\n` +
-                `**New Avatar:** [Click Here](${newMember.displayAvatarURL({ size: 4096 })})`,
-                0x5865F2
+                `**User:** ${newUser.tag} (${newUser.id})\n**New Avatar:** [Click Here](${newAvatarURL})`,
+                0x5865F2,
+                newAvatarURL
             );
         }
     }
