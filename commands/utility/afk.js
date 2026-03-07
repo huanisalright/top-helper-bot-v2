@@ -32,7 +32,7 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setTitle('AFK Status Enabled')
-            .setDescription(`Reason: **${reason}**\n\n*This message will be deleted in 15 seconds.*`)
+            .setDescription(`Reason: **${reason}`)
             .setColor(0xFEE75C)
             .setTimestamp();
 

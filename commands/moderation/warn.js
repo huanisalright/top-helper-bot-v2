@@ -1,10 +1,10 @@
-const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
-const fs = require('fs');
-const path = require('path');
-const { sendLog } = require('../../utils/logger');
-const { notif } = require('../../utils/embed');
+import { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } from 'discord.js';
+import fs from 'fs';
+import path from 'path';
+import { sendLog } from '../../utils/logger.js';
+import { notif } from '../../utils/embed.js';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('warn')
         .setDescription('Issue a warning to a member')
